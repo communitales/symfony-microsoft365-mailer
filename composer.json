@@ -33,7 +33,7 @@
     },
     "scripts": {
         "phpcs": "vendor/bin/php-cs-fixer fix",
-        "phpstan": "vendor/bin/phpstan analyse -c phpstan.dev.neon > docs/TODO-phpstan.md",
+        "phpstan": "vendor/bin/phpstan analyse > docs/TODO-phpstan.md",
         "psalm": "vendor/bin/psalm -m > docs/TODO-psalm.md",
         "rector": "vendor/bin/rector process",
         "test": "vendor/bin/phpunit",
