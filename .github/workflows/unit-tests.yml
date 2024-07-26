@@ -27,7 +27,7 @@ jobs:
           - php: '8.2'
           - php: '8.3'
           - php: '8.4'
-            #mode: experimental
+            mode: experimental
       fail-fast: false
 
     runs-on: ubuntu-24.04
