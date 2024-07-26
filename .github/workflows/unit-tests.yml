@@ -48,7 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer install --optimize-autoloader --prefer-dist --no-interaction --no-progress
+          composer install --optimize-autoloader --prefer-dist --no-interaction --no-progress $([[ "${{ matrix.mode }}" == 'experimental' ]] && echo ' --ignore-platform-req=php+')
 
       - name: Phpunit
         run: |
