@@ -48,7 +48,6 @@ use Throwable;
 use function base64_encode;
 use function ceil;
 use function current;
-use function in_array;
 use function str_split;
 use function strlen;
 
@@ -345,35 +344,10 @@ class Microsoft365ApiTransport extends AbstractApiTransport
 
     private function addRecipientsToMessage(Message $message, Email $email, Envelope $envelope): void
     {
-        $to = [];
-        $cc = [];
-        $bcc = [];
-        $replyTo = [];
-
-        foreach ($envelope->getRecipients() as $address) {
-            $recipient = $this->mapMimeAddressToRecipient($address);
-
-            if (in_array($address, $email->getTo(), true)) {
-                $to[] = $recipient;
-            }
-
-            if (in_array($address, $email->getCc(), true)) {
-                $cc[] = $recipient;
-            }
-
-            if (in_array($address, $email->getBcc(), true)) {
-                $bcc[] = $recipient;
-            }
-
-            if (in_array($address, $email->getReplyTo(), true)) {
-                $replyTo[] = $recipient;
-            }
-        }
-
-        $message->setToRecipients($to);
-        $message->setCcRecipients($cc);
-        $message->setBccRecipients($bcc);
-        $message->setReplyTo($replyTo);
+        $message->setToRecipients($this->mapMimeAddressListToRecipientList($this->getRecipients($email, $envelope)));
+        $message->setCcRecipients($this->mapMimeAddressListToRecipientList($email->getCc()));
+        $message->setBccRecipients($this->mapMimeAddressListToRecipientList($email->getBcc()));
+        $message->setReplyTo($this->mapMimeAddressListToRecipientList($email->getReplyTo()));
     }
 
     private function getContentDispositionFilename(DataPart $attachment): string

@@ -20,6 +20,7 @@ use Microsoft\Kiota\Abstractions\Serialization\SerializationWriterFactoryRegistr
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mime\Address;
@@ -86,6 +87,62 @@ class Microsoft365ApiTransportTest extends TestCase
             ->to(new Address('to@example.com', 'John To Doe'));
 
         $message = $transport->send($email);
+
+        $this->assertInstanceOf(SentMessage::class, $message);
+        $this->assertStringEndsWith('@example.com', $message->getMessageId());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws Exception
+     *
+     * @see https://symfony.com/doc/current/mailer.html#always-send-to-the-same-address
+     */
+    public function testSendDefaultSender(): void
+    {
+        $client = new MockHttpClient();
+
+        $requestInformation = new RequestInformation(new ObservabilityOptions());
+        $requestInformation->urlTemplate = '{+baseurl}/users/{user%2Did}/sendMail';
+        $requestInformation->pathParameters = [
+            'baseurl' => '',
+            'user%2Did' => 'info@example.com',
+        ];
+        $requestInformation->httpMethod = 'POST';
+
+        $content = '{"Message":{"@odata.type":"#microsoft.graph.message","bccRecipients":[],"body":{"content":"Hello.","contentType":"html"},"ccRecipients":[],"from":{"emailAddress":{"address":"from@example.com","name":"John From Doe"}},"replyTo":[],"subject":"Microsoft 365 Unit Test 1 - Plain Message With Default recipient","toRecipients":[{"emailAddress":{"address":"to-default@example.com"}}]}}';
+
+        $requestAdapter = $this->createMock(RequestAdapter::class);
+        $requestAdapter->method('getSerializationWriterFactory')
+            ->willReturn(SerializationWriterFactoryRegistry::getDefaultInstance());
+        $requestAdapter->expects($this->once())
+            ->method('sendNoContentAsync')
+            ->with(
+                $this->callback(function (RequestInformation $value) use ($requestInformation, $content) {
+                    $this->assertSame($requestInformation->urlTemplate, $value->urlTemplate);
+                    $this->assertSame($requestInformation->pathParameters, $value->pathParameters);
+                    $this->assertSame($requestInformation->httpMethod, $value->httpMethod);
+                    $this->assertSame($content, (string)$value->content);
+
+                    return true;
+                })
+            );
+
+        $transport = $this->createTransport($client, $requestAdapter);
+
+        $email = (new Email())
+            ->html('Hello.')
+            ->subject('Microsoft 365 Unit Test 1 - Plain Message With Default recipient')
+            ->from(new Address('from@example.com', 'John From Doe'))
+            ->to(new Address('to@example.com', 'John To Doe'));
+
+        // Envelope is removing the name of the recipients
+        $envelope = new Envelope(
+            new Address('from@example.com', 'John From Doe'),
+            [new Address('to-default@example.com', 'John To Doe')]
+        );
+
+        $message = $transport->send($email, $envelope);
 
         $this->assertInstanceOf(SentMessage::class, $message);
         $this->assertStringEndsWith('@example.com', $message->getMessageId());

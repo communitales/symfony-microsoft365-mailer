@@ -28,4 +28,19 @@ trait GraphModelMapperTrait
 
         return $recipient;
     }
+
+    /**
+     * @param Address[] $addressList
+     *
+     * @return Recipient[]
+     */
+    private function mapMimeAddressListToRecipientList(array $addressList): array
+    {
+        $result = [];
+        foreach ($addressList as $address) {
+            $result[] = $this->mapMimeAddressToRecipient($address);
+        }
+
+        return $result;
+    }
 }
