@@ -1,8 +1,6 @@
 name: Unit Tests
 
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 defaults:
   run:
@@ -50,9 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          COMPOSER_HOME="$(composer config home)"
-          ([ -d "$COMPOSER_HOME" ] || mkdir "$COMPOSER_HOME") && cp .github/composer-config.json "$COMPOSER_HOME/config.json"
-          composer install --no-progress
+          composer install --optimize-autoloader --prefer-dist --no-interaction --no-progress
 
       - name: Phpunit
         run: |
