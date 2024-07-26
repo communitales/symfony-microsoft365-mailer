@@ -1,0 +1,59 @@
+name: Unit Tests
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+
+  tests:
+    name: Unit Tests
+
+    env:
+      extensions: amqp,apcu,igbinary,intl,mbstring,memcached,redis,relay
+
+    strategy:
+      matrix:
+        include:
+          - php: '8.2'
+          - php: '8.3'
+          - php: '8.4'
+            #mode: experimental
+      fail-fast: false
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: "none"
+          ini-values: date.timezone=UTC,memory_limit=-1,default_socket_timeout=10,session.gc_probability=0,apc.enable_cli=1,zend.assertions=1
+          php-version: "${{ matrix.php }}"
+          extensions: "${{ matrix.extensions || env.extensions }}"
+
+      - name: Install dependencies
+        run: |
+          COMPOSER_HOME="$(composer config home)"
+          ([ -d "$COMPOSER_HOME" ] || mkdir "$COMPOSER_HOME") && cp .github/composer-config.json "$COMPOSER_HOME/config.json"
+          composer install --no-progress
+
+      - name: Phpunit
+        run: |
+          ./vendor/bin/phpunit

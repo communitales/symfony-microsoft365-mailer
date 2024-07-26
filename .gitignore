@@ -1,0 +1,7 @@
+vendor/
+composer.lock
+docs/TODO-*
+.phpunit.result.cache
+.phpunit.cache
+.php-cs-fixer.cache
+.env.*.local

@@ -1,0 +1,55 @@
+{
+    "name": "communitales/symfony-microsoft365-mailer",
+    "type": "symfony-mailer-bridge",
+    "description": "Symfony Office365 Mailer Bridge",
+    "keywords": ["office365", "microsoft365", "symfony", "mailer"],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "microsoft/microsoft-graph": "^2.12",
+        "symfony/mailer": "^6.4|^7.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.59",
+        "phpstan/phpstan": "^1.11",
+        "phpunit/phpunit": "^10.5",
+        "rector/rector": "^1.2",
+        "symfony/dotenv": "^7.1",
+        "symfony/http-client": "^6.4|^7.0",
+        "vimeo/psalm": "^5.25"
+    },
+    "autoload": {
+        "psr-4": { "Communitales\\Symfony\\Component\\Mailer\\Bridge\\Microsoft365\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "scripts": {
+        "phpcs": "vendor/bin/php-cs-fixer fix",
+        "phpstan": "vendor/bin/phpstan analyse -c phpstan.dev.neon > docs/TODO-phpstan.md",
+        "psalm": "vendor/bin/psalm -m > docs/TODO-psalm.md",
+        "rector": "vendor/bin/rector process",
+        "test": "vendor/bin/phpunit",
+        "codecheck": [
+            "@rector",
+            "@phpcs",
+            "@phpstan",
+            "@psalm",
+            "@test"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": false,
+            "tbachert/spi": false
+        }
+    }
+}

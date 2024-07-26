@@ -1,0 +1,48 @@
+name: Psalm
+
+on:
+  pull_request: ~
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  psalm:
+    name: Psalm
+    runs-on: Ubuntu-24.04
+
+    env:
+      php-version: '8.2'
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.php-version }}
+          ini-values: "memory_limit=-1"
+          coverage: none
+
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          COMPOSER_HOME="$(composer config home)"
+          ([ -d "$COMPOSER_HOME" ] || mkdir "$COMPOSER_HOME") && cp .github/composer-config.json "$COMPOSER_HOME/config.json"
+          composer install --optimize-autoloader --prefer-dist --no-interaction --no-progress
+
+      - name: Psalm
+        run: |
+          ./vendor/bin/psalm --no-progress || ./vendor/bin/psalm --output-format=github --no-progress
