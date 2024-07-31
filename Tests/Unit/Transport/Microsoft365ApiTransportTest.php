@@ -25,6 +25,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function basename;
@@ -163,7 +164,7 @@ class Microsoft365ApiTransportTest extends TestCase
         ];
         $requestInformation->httpMethod = 'POST';
 
-        $content = '{"Message":{"@odata.type":"#microsoft.graph.message","attachments":[{"@odata.type":"#microsoft.graph.fileAttachment","contentType":"image/png","name":"attachment-small.png","contentBytes":"Li4uLi4uLi4uLg=="}],"bccRecipients":[],"body":{"content":"Hello.","contentType":"html"},"ccRecipients":[],"from":{"emailAddress":{"address":"from@example.com","name":"John From Doe"}},"hasAttachments":true,"replyTo":[],"subject":"Microsoft 365 Unit Test 2 - With Attachment","toRecipients":[{"emailAddress":{"address":"to@example.com","name":"John To Doe"}}]}}';
+        $content = '{"Message":{"@odata.type":"#microsoft.graph.message","attachments":[{"@odata.type":"#microsoft.graph.fileAttachment","contentType":"image/png","isInline":false,"name":"attachment-small.png","contentBytes":"Li4uLi4uLi4uLg==","contentId":"id-unit-test@symfony"}],"bccRecipients":[],"body":{"content":"Hello.","contentType":"html"},"ccRecipients":[],"from":{"emailAddress":{"address":"from@example.com","name":"John From Doe"}},"hasAttachments":true,"replyTo":[],"subject":"Microsoft 365 Unit Test 2 - With Attachment","toRecipients":[{"emailAddress":{"address":"to@example.com","name":"John To Doe"}}]}}';
 
         $requestAdapter = $this->createMock(RequestAdapter::class);
         $requestAdapter->method('getSerializationWriterFactory')
@@ -186,16 +187,19 @@ class Microsoft365ApiTransportTest extends TestCase
         $filename = '/tmp/attachment-small.png';
         $fileContent = str_repeat('.', 10);
 
+        $attachment = new DataPart(
+            $fileContent,
+            basename($filename),
+            'image/png'
+        );
+        $attachment->setContentId('id-unit-test@symfony');
+
         $email = (new Email())
             ->html('Hello.')
             ->subject('Microsoft 365 Unit Test 2 - With Attachment')
             ->from(new Address('from@example.com', 'John From Doe'))
             ->to(new Address('to@example.com', 'John To Doe'))
-            ->attach(
-                $fileContent,
-                basename($filename),
-                'image/png'
-            );
+            ->addPart($attachment);
 
         $message = $transport->send($email);
 

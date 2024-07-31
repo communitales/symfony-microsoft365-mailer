@@ -327,8 +327,9 @@ class Microsoft365ApiTransport extends AbstractApiTransport
 
             $fileAttachment = new FileAttachment();
             $fileAttachment->setOdataType('#microsoft.graph.fileAttachment');
-            $fileAttachment->setContentId($fileAttachment->getContentId());
+            $fileAttachment->setContentId($attachment->getContentId());
             $fileAttachment->setName($this->getContentDispositionFilename($attachment));
+            $fileAttachment->setIsInline($attachment->getDisposition() === 'inline');
             $fileAttachment->setContentType($attachment->getMediaType().'/'.$attachment->getMediaSubtype());
             $fileAttachment->setContentBytes(Utils::streamFor(base64_encode($attachment->getBody())));
             $attachmentsList [] = $fileAttachment;
