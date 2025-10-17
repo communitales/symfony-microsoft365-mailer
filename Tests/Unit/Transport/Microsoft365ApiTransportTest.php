@@ -69,7 +69,7 @@ class Microsoft365ApiTransportTest extends TestCase
         $requestAdapter->expects($this->once())
             ->method('sendNoContentAsync')
             ->with(
-                $this->callback(function (RequestInformation $value) use ($requestInformation, $content) {
+                $this->callback(function (RequestInformation $value) use ($requestInformation, $content): true {
                     $this->assertSame($requestInformation->urlTemplate, $value->urlTemplate);
                     $this->assertSame($requestInformation->pathParameters, $value->pathParameters);
                     $this->assertSame($requestInformation->httpMethod, $value->httpMethod);
@@ -119,7 +119,7 @@ class Microsoft365ApiTransportTest extends TestCase
         $requestAdapter->expects($this->once())
             ->method('sendNoContentAsync')
             ->with(
-                $this->callback(function (RequestInformation $value) use ($requestInformation, $content) {
+                $this->callback(function (RequestInformation $value) use ($requestInformation, $content): true {
                     $this->assertSame($requestInformation->urlTemplate, $value->urlTemplate);
                     $this->assertSame($requestInformation->pathParameters, $value->pathParameters);
                     $this->assertSame($requestInformation->httpMethod, $value->httpMethod);
@@ -172,7 +172,7 @@ class Microsoft365ApiTransportTest extends TestCase
         $requestAdapter->expects($this->once())
             ->method('sendNoContentAsync')
             ->with(
-                $this->callback(function (RequestInformation $value) use ($requestInformation, $content) {
+                $this->callback(function (RequestInformation $value) use ($requestInformation, $content): true {
                     $this->assertSame($requestInformation->urlTemplate, $value->urlTemplate);
                     $this->assertSame($requestInformation->pathParameters, $value->pathParameters);
                     $this->assertSame($requestInformation->httpMethod, $value->httpMethod);
@@ -244,7 +244,7 @@ class Microsoft365ApiTransportTest extends TestCase
         $requestAdapter->expects($this->exactly(2))
             ->method('sendAsync')
             ->with(
-                $this->callback(function (RequestInformation $value) use (&$sentContent, &$sentUrlTemplates) {
+                $this->callback(function (RequestInformation $value) use (&$sentContent, &$sentUrlTemplates): true {
                     $sentUrlTemplates[] = $value->urlTemplate;
                     $sentContent[] = (string)$value->content;
 
@@ -258,7 +258,7 @@ class Microsoft365ApiTransportTest extends TestCase
             );
         $requestAdapter->method('sendNoContentAsync')
             ->with(
-                $this->callback(function (RequestInformation $value) use (&$sentContent, &$sentUrlTemplates) {
+                $this->callback(function (RequestInformation $value) use (&$sentContent, &$sentUrlTemplates): true {
                     $sentUrlTemplates[] = $value->urlTemplate;
                     $sentContent[] = (string)$value->content;
 

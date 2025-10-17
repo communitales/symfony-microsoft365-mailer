@@ -42,7 +42,7 @@ class Microsoft365ApiTransportTest extends TestCase
             $clientSecret,
             $tenantId,
             $username,
-            $client
+            $client,
         );
 
         $this->mailer = new Mailer($transport);
@@ -53,6 +53,8 @@ class Microsoft365ApiTransportTest extends TestCase
      */
     public function testSend(): void
     {
+        $this->expectNotToPerformAssertions();
+
         $email = (new Email())
             ->html('Hello.')
             ->subject('Microsoft 365 Integration Test 1 - Plain Message')
@@ -60,8 +62,6 @@ class Microsoft365ApiTransportTest extends TestCase
             ->to(new Address($_ENV['MAILER_TO_EMAIL'], $_ENV['MAILER_TO_NAME']));
 
         $this->mailer->send($email);
-
-        self::assertTrue(true);
     }
 
     /**
@@ -69,6 +69,8 @@ class Microsoft365ApiTransportTest extends TestCase
      */
     public function testSendWithSmallAttachment(): void
     {
+        $this->expectNotToPerformAssertions();
+
         $filename = __DIR__.'/../../Fixtures/attachment-small.png';
         $fileContent = file_get_contents($filename);
         if ($fileContent === false) {
@@ -83,12 +85,10 @@ class Microsoft365ApiTransportTest extends TestCase
             ->attach(
                 $fileContent,
                 basename($filename),
-                'image/png'
+                'image/png',
             );
 
         $this->mailer->send($email);
-
-        self::assertTrue(true);
     }
 
     /**
@@ -96,6 +96,8 @@ class Microsoft365ApiTransportTest extends TestCase
      */
     public function testSendWithLargeAttachment(): void
     {
+        $this->expectNotToPerformAssertions();
+
         $filename = __DIR__.'/../../Fixtures/attachment-large.png';
         $fileContent = file_get_contents($filename);
         if ($fileContent === false) {
@@ -110,11 +112,9 @@ class Microsoft365ApiTransportTest extends TestCase
             ->attach(
                 $fileContent,
                 basename($filename),
-                'image/png'
+                'image/png',
             );
 
         $this->mailer->send($email);
-
-        self::assertTrue(true);
     }
 }

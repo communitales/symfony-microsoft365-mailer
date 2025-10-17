@@ -102,7 +102,7 @@ class Microsoft365ApiTransport extends AbstractApiTransport
             );
         } catch (ODataError $error) {
             throw new TransportException(
-                'Unable to send an email: '.(string)($error->getError()?->getMessage()),
+                'Unable to send an email: '.$error->getError()?->getMessage(),
                 $error->getCode(),
                 $error
             );

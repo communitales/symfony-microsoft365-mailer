@@ -13,17 +13,16 @@
     ],
     "require": {
         "php": ">=8.2",
-        "microsoft/microsoft-graph": "^2.12",
-        "symfony/mailer": "^6.4|^7.0"
+        "microsoft/microsoft-graph": "^2.49",
+        "symfony/mailer": "^6.4|^7.3.4"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.59",
-        "phpstan/phpstan": "^1.11",
-        "phpunit/phpunit": "^10.5",
-        "rector/rector": "^1.2",
-        "symfony/dotenv": "^7.1",
-        "symfony/http-client": "^6.4|^7.0",
-        "vimeo/psalm": "^5.25"
+        "friendsofphp/php-cs-fixer": ">=3.88.2",
+        "phpstan/phpstan": ">=2.1.31",
+        "phpunit/phpunit": ">=12.4.1",
+        "rector/rector": ">=2.2.3",
+        "symfony/dotenv": ">=7.3.2",
+        "symfony/http-client": ">=7.3.4"
     },
     "autoload": {
         "psr-4": { "Communitales\\Symfony\\Component\\Mailer\\Bridge\\Microsoft365\\": "" },
@@ -34,14 +33,12 @@
     "scripts": {
         "phpcs": "vendor/bin/php-cs-fixer fix",
         "phpstan": "vendor/bin/phpstan analyse > docs/TODO-phpstan.md",
-        "psalm": "vendor/bin/psalm -m > docs/TODO-psalm.md",
         "rector": "vendor/bin/rector process",
         "test": "vendor/bin/phpunit",
         "codecheck": [
             "@rector",
             "@phpcs",
             "@phpstan",
-            "@psalm",
             "@test"
         ]
     },

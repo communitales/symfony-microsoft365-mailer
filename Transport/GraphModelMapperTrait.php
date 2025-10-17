@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   Copyright (c) 2024 Communitales GmbH (https://www.communitales.com/)
  *
